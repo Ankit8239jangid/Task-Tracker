@@ -1,50 +1,53 @@
-// import React from 'react'
-// import Siginup from './Components/Auth/Signup'
-// import SignIn from './Components/Auth/siginin'
-// import { BrowserRouter, Route, Routes } from 'react-router-dom'
-// import Dashborde from './Components/Auth/pages/Dashborde'
-// import SendMoney from './Components/Auth/pages/SendMoney'
-
-// export default function App() {
-//   return (
-//     <>
-//       <BrowserRouter >
-//         <Routes>
-//           <Route path="/Siginup" element={<Siginup />} />
-//           <Route path="/siginin" element={<SignIn />} />
-//           <Route path="/dashbord" element={<Dashborde />} />
-//           <Route path="/send" element={<SendMoney/>} />
-//         </Routes>
-//       </BrowserRouter>
-//     </>
-
-//   )
-// }
 import React from 'react'
-import { useState } from 'react'
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
+import Signup from './Components/Auth/Signup'
+import Login from './Components/Auth/Login'
+import Dashboard from './Components/Dashboard/Dashboard'
+import ProjectDetails from './Components/Projects/ProjectDetails'
+import CreateProject from './Components/Projects/CreateProject'
+import CreateTask from './Components/Tasks/CreateTask'
+import ProtectedRoute from './Components/Common/ProtectedRoute'
+import Navbar from './Components/Common/Navbar'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { AuthProvider } from './context/AuthContext'
 
-function App() {
-  const [value, setValue] = useState('')
-  const [inputvalue, setInputvalue] = useState('')
-  const paragraf = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus dolore natus, suscipit quisquam possimus animi voluptas, optio nesciunt blanditiis'
-  const handalClick = () => {
-    const words = paragraf.split(' ');
-    const newData = words.slice(0, inputvalue).join(' ');
-    setValue(newData)
-  }
-
+export default function App() {
   return (
-    <>
-      <div className="text-white  h-screen w-full p-20">
-        <div className="flex h-10 w-1/3 items-center justify-center gap-10">
-          <input onChange={(e) => setInputvalue(e.target.value)} className='text-black p-2 rounded-lg' type="number" />
-          <button onClick={handalClick} className='bg-green-500 p-2 rounded-lg active:scale-90'>Generate</button>
+    <BrowserRouter>
+      <AuthProvider>
+        <div className="min-h-screen bg-gray-900 text-white">
+          <Navbar />
+          <div className="container mx-auto px-4 py-8">
+            <Routes>
+              <Route path="/" element={<Navigate to="/login" />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/project/:id" element={
+                <ProtectedRoute>
+                  <ProjectDetails />
+                </ProtectedRoute>
+              } />
+              <Route path="/create-project" element={
+                <ProtectedRoute>
+                  <CreateProject />
+                </ProtectedRoute>
+              } />
+              <Route path="/create-task/:projectId" element={
+                <ProtectedRoute>
+                  <CreateTask />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </div>
         </div>
-        <div className="mt-10">{value}</div>
-      </div>
-    </>
-  )
+        <ToastContainer position="bottom-right" theme="dark" />
+      </AuthProvider>
+    </BrowserRouter>
+  );
 }
-
-export default App
-  

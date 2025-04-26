@@ -1,28 +1,32 @@
 import jwt from "jsonwebtoken";
-import { User } from "../DB/index.js";
-import zod from "zod";
+import { User } from "../DB/UserSchema/User_Schema.js";
+import { z } from "zod";
 import dotenv from "dotenv";
+import cookie from "cookie-parser";
 
 dotenv.config();
 
-// Using a fallback secret key if environment variable is not set
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key-here";
+const JWT_SECRET = process.env.JWT_SECRET;
+const COOKIE_SECRET = process.env.COOKIE_SECRET || "task-tracker-secret";
 
-const signupSchema = zod.object({
-    username: zod.string().email(),
-    password: zod.string().min(6),
-    firstname: zod.string(),
-    lastname: zod.string(),
+const signupSchema = z.object({
+    email: z.string().email(),
+    password: z.string().min(6),
+    firstname: z.string(),
+    lastname: z.string(),
+    country: z.string(),
 });
 
+// Function to validate user input
 async function userInputValidater(req, res, next) {
     try {
-        const { success } = signupSchema.safeParse(req.body);
-        if (!success) {
-            return res.status(400).json({ message: "Invalid input data" });
+        const result = signupSchema.safeParse(req.body);
+        if (!result.success) {
+            const errorMessages = result.error.errors.map((err) => err.message);
+            return res.status(400).json({ message: "Invalid input data", errors: errorMessages });
         }
 
-        const existingUser = await User.findOne({ username: req.body.username });
+        const existingUser = await User.findOne({ email: req.body.email });
 
         if (existingUser) {
             return res.status(409).json({ message: "User already exists" });
@@ -36,30 +40,26 @@ async function userInputValidater(req, res, next) {
 
 export const verifyToken = (req, res, next) => {
     try {
-        const authHeader = req.headers.authorization;
-
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return res.status(401).json({ message: "Authorization token required" });
-        }
-
-        const token = authHeader.split(" ")[1];
+        let token = req.cookies?.token;
 
         if (!token) {
-            return res.status(401).json({ message: "Token not provided" });
+            const authHeader = req.headers.authorization;
+
+            if (!authHeader || !authHeader.startsWith("Bearer ")) {
+                return res.status(401).json({ message: "Authorization token required" });
+            }
+
+            token = authHeader.split(" ")[1];
+
+            if (!token) {
+                return res.status(401).json({ message: "Token not provided" });
+            }
         }
 
-        // Verify token and extract all payload data
         const decoded = jwt.verify(token, JWT_SECRET);
 
-        // Set all decoded data to req.user
         req.user = decoded;
-
-        // Also set userId specifically for backwards compatibility
         req.userId = decoded.userId;
-        
-
-        console.log("Decoded token payload:", decoded); // Debug log
-        console.log("User ID from token:", decoded.userId); // Debug log
 
         next();
     } catch (error) {

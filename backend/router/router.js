@@ -1,22 +1,16 @@
 import express from "express";
 export const router = express.Router();
 import userRoute from "./User.router.js";
-import accountRoute from "./account.router.js";
+import projectRoute from "./Project.router.js";
+import taskRoute from "./Task.router.js";
 
-router.use('/user', userRoute);
-/* 
-{
-get: api/v1/user/balance;
-post: api/v1/user/signin;
+// Auth routes
+router.use("/auth", userRoute);
 
-}
-*/
+// Project routes
+router.use("/projects", projectRoute);
 
-router.use('/account', accountRoute);
+// Task routes
+router.use("/tasks", taskRoute);
 
-/*
-{
-  get: api/v1/account/balance;
-  put: api/v1/account/deposit;
-}
-*/
+export default router; // Exporting router for use in other files
