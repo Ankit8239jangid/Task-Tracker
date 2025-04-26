@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 import api from '../../services/api';
 import ConfirmationModal from '../Common/ConfirmationModal';
 import { FaPlus, FaTasks, FaTrash } from 'react-icons/fa';
