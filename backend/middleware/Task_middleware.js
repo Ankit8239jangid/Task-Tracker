@@ -11,7 +11,7 @@ const taskSchema = z.object({
 const taskUpdateSchema = z.object({
     title: z.string().optional(),
     description: z.string().optional(),
-    status: z.enum(['To Do', 'In Progress', 'Done']).optional()
+    status: z.enum(['Not Started', 'In Progress', 'Completed']).optional()
 });
 
 // Middleware to validate task input

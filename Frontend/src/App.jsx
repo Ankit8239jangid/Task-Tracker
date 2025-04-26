@@ -8,8 +8,8 @@ import CreateProject from './Components/Projects/CreateProject'
 import CreateTask from './Components/Tasks/CreateTask'
 import ProtectedRoute from './Components/Common/ProtectedRoute'
 import Navbar from './Components/Common/Navbar'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import { Toaster } from 'react-hot-toast';
+
 import { AuthProvider } from './context/AuthContext'
 
 export default function App() {
@@ -46,7 +46,12 @@ export default function App() {
             </Routes>
           </div>
         </div>
-        <ToastContainer position="bottom-right" theme="dark" />
+        <Toaster
+          position="top-center"
+          reverseOrder={true}
+        />
+
+
       </AuthProvider>
     </BrowserRouter>
   );

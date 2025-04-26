@@ -2,11 +2,12 @@ import express from 'express';
 import { verifyToken } from '../middleware/User.auth.js';
 import { Task } from '../DB/UserSchema/Task_Schema.js';
 import { Project } from '../DB/UserSchema/Project_Schema.js';
+import { validateTaskInput, validateTaskUpdateInput } from '../middleware/Task_middleware.js';
 
 const router = express.Router();
 
 // Create Task
-router.post("/", verifyToken, async (req, res) => {
+router.post("/", verifyToken, validateTaskInput, async (req, res) => {
     try {
         const { title, description, projectId } = req.body;
         const userId = req.userId;
@@ -46,7 +47,7 @@ router.get("/:projectId", verifyToken, async (req, res) => {
 });
 
 // Update Task
-router.put("/:taskId", verifyToken, async (req, res) => {
+router.put("/:taskId", verifyToken, validateTaskUpdateInput, async (req, res) => {
     try {
         const { taskId } = req.params;
         const { title, description, status } = req.body;
@@ -92,7 +93,7 @@ router.delete("/:taskId", verifyToken, async (req, res) => {
             return res.status(403).json({ message: "Unauthorized to delete task" });
         }
 
-        await task.remove();
+        await Task.findByIdAndDelete(taskId);
         return res.json({ message: "Task deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error deleting task", error: error.message });
