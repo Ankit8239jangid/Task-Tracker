@@ -56,6 +56,8 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const response = await api.signup(userData);
       setUser(response.data.user);
+      const token = response.data.token;
+      localStorage.setItem('token', token);
       toast.success('Account created successfully');
       navigate('/dashboard');
       return response.data;
@@ -73,6 +75,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       await api.logout();
+      localStorage.removeItem('token');
       setUser(null);
       toast.success('Logged out successfully');
       navigate('/login');
