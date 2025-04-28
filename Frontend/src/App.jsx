@@ -6,7 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
 
-// Lazy Load Components
+// Lazy Load Components impliementatig
 const Signup = lazy(() => import('./Components/Auth/Signup'));
 const Login = lazy(() => import('./Components/Auth/Login'));
 const Dashboard = lazy(() => import('./Components/Dashboard/Dashboard'));
