@@ -8,10 +8,10 @@ import CreateProject from './Components/Projects/CreateProject'
 import CreateTask from './Components/Tasks/CreateTask'
 import ProtectedRoute from './Components/Common/ProtectedRoute'
 import Navbar from './Components/Common/Navbar'
-import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 
 import { AuthProvider } from './context/AuthContext'
+import { Toaster } from 'react-hot-toast'
 
 export default function App() {
   return (
@@ -47,18 +47,7 @@ export default function App() {
             </Routes>
           </div>
         </div>
-        <ToastContainer
-          position="top-center"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
+        <Toaster/>
       </AuthProvider>
     </BrowserRouter>
   );

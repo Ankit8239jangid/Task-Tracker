@@ -15,10 +15,11 @@ instance.interceptors.request.use(
   (config) => {
     // Get token from cookies or localStorage
     const token = Cookies.get('token');
+    const tokenFromLocalStorage = localStorage.getItem('token');
 
     // If token exists, add it to the headers
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers['Authorization'] = `Bearer ${tokenFromLocalStorage || token}`;
     }
 
     return config;
@@ -35,7 +36,7 @@ instance.interceptors.response.use(
     if (response.data && response.data.token) {
       Cookies.set('token', response.data.token, {
         expires: 1, // 1 day
-        secure: process.env.NODE_ENV === 'production',
+        secure: import.meta.env.NODE_ENV === 'production',
         sameSite: 'Lax'
       });
     }
