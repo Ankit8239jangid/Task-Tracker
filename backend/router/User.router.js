@@ -10,28 +10,7 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const router = express.Router();
 
-// Route to get all users' profile
-router.get("/all_users", async (req, res) => {
-    try {
-        const users = await User.find();  // Fetch all users from the database
 
-        if (users.length === 0) {
-            return res.status(404).json({ message: "No users found" });
-        }
-
-        const userProfiles = users.map(user => ({
-            id: user._id,
-            email: user.email,
-            firstname: user.firstname,
-            lastname: user.lastname,
-            country: user.country
-        }));
-
-        return res.json(userProfiles);
-    } catch (error) {
-        return res.status(500).json({ message: "Error fetching user profiles", error: error.message });
-    }
-});
 
 // Route to login user
 router.post("/login", async (req, res) => {
@@ -50,12 +29,15 @@ router.post("/login", async (req, res) => {
 
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "24h" });
 
+        // Set the token in a cookie
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            sameSite: 'Lax'
         });
 
+        // Also return the token in the response body for the frontend to store
         return res.json({
             message: "Logged in successfully",
             user: { id: user._id, email: user.email, firstname: user.firstname, lastname: user.lastname, country: user.country },
@@ -82,12 +64,15 @@ router.post("/signup", userInputValidater, async (req, res) => {
 
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "24h" });
 
+        // Set the token in a cookie
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            maxAge: 24 * 60 * 60 * 1000, // 24 hours
+            sameSite: 'Lax'
         });
 
+        // Also return the token in the response body for the frontend to store
         return res.status(201).json({
             message: "User created successfully",
             user: { id: user._id, email: user.email, firstname: user.firstname, lastname: user.lastname, country: user.country },
@@ -101,9 +86,15 @@ router.post("/signup", userInputValidater, async (req, res) => {
 // Route to logout user
 router.post("/logout", (_req, res) => {
     try {
-        res.clearCookie('token');
+        // Clear the token cookie
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Lax'
+        });
         return res.json({ message: "Logged out successfully" });
     } catch (error) {
+        console.error("Logout error:", error);
         return res.status(500).json({ message: "Server error", error: error.message });
     }
 });

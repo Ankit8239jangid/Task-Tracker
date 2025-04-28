@@ -40,8 +40,10 @@ async function userInputValidater(req, res, next) {
 
 export const verifyToken = (req, res, next) => {
     try {
+        // First check for token in cookies
         let token = req.cookies?.token;
 
+        // If not in cookies, check authorization header
         if (!token) {
             const authHeader = req.headers.authorization;
 
@@ -56,17 +58,17 @@ export const verifyToken = (req, res, next) => {
             }
         }
 
+        // Verify the token
         const decoded = jwt.verify(token, JWT_SECRET);
 
+        // Set user info on request object
         req.user = decoded;
         req.userId = decoded.userId;
 
         next();
     } catch (error) {
-        if (error) {
-            return res.status(401).json({ message: "Invalid token" });
-        }
-        return res.status(500).json({ message: "Internal server error" });
+        console.error("Token verification error:", error);
+        return res.status(401).json({ message: "Invalid or expired token" });
     }
 };
 

@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import api from '../services/api';
 
 // Create the auth context
@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const response = await api.login(credentials);
       setUser(response.data.user);
+     
       toast.success('Logged in successfully');
       navigate('/dashboard');
       return response.data;
